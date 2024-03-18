@@ -1,7 +1,16 @@
-from flask import Flask, redirect, render_template, request, session, url_for
+import pytest
+from main import app
 
-app = Flask(__name__)
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-@app.route('/')
-def hello():
-    return 'Hello, world!'
+def test_hello(client):
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'Hello, world!' in response.data
+
+if __name__ == "__main__":
+    pytest.main()
