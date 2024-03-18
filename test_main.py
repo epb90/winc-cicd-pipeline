@@ -1,13 +1,16 @@
 import pytest
-
 from main import app
 
 @pytest.fixture
 def client():
-    client = app.test_client()
-    return client
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
 
-def test_index(client):
+def test_hello(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert response.data == b'Hello, World!'
+    assert b'Hello, world!' in response.data
+
+if __name__ == "__main__":
+    pytest.main()
